@@ -1,17 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "npm install && npm run build",
-  "installCommand": "npm install",
-  "builds": [
+  "rewrites": [
     {
-      "src": "src/app.controller.ts",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "src/app.controller.ts"
+      "source": "/(.*)",
+      "destination": "/api"
     }
   ]
 }
