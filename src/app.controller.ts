@@ -11,6 +11,7 @@ import { globalErrorHandler } from "./utils/errors/error.response";
 import { connectDB } from "./DB/connection";
 config({path : path.resolve('./config/.env.dev')});
 
+
 const limiter :RateLimitRequestHandler = expressRateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 100,

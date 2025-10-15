@@ -33,7 +33,7 @@ body:z.strictObject({
    email:generalFields.email,
    otp : z.string().regex(/^\d{6}$/, { message: "OTP must be 6 numbers" }),
    
-})
+}) 
 
 }
 

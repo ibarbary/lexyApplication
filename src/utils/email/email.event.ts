@@ -1,6 +1,6 @@
 import Mail from "nodemailer/lib/mailer"
 import EventEmitter from "events"
-import { template } from "./email.tempelate"
+import { forgetPasswordTemplate,  emailVerificationTemplate } from "./email.tempelate"
 import { sendEmail } from "./send.email"
 
 export const emailEvent = new EventEmitter() 
@@ -14,7 +14,7 @@ username : string
 emailEvent.on("confirmEmail", async(data:IEmail)=>{
     try {
     data.subject ="confirma your email"
-data.html = template(data.otp,data.username,data.subject)
+data.html = emailVerificationTemplate(data.otp,data.username)
 await sendEmail(data)
     
     } catch (error) {
@@ -28,7 +28,7 @@ await sendEmail(data)
 emailEvent.on("forgotPassword", async(data:IEmail)=>{
     try {
     data.subject ="forgot password"
-data.html = template(data.otp,data.username,data.subject)
+data.html = forgetPasswordTemplate(data.otp,data.username)
 await sendEmail(data)
     
     } catch (error) {

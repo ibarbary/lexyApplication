@@ -16,6 +16,7 @@ const {decoded,user} = await decodedtoken({authorization:req.headers.authorizati
 if(!accessRole.includes(user.role)){
     throw new BadRequestException("user not authorized");
 }
+// beare token
 
 req.user = user;
 req.decoded = decoded;
