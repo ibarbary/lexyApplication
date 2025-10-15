@@ -14,7 +14,7 @@ config({path : path.resolve('./config/.env.dev')});
 
 const limiter: RateLimitRequestHandler = expressRateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 100,
+  max: 100,
   message: {
     status: 429,
     message: "Too many requests",
