@@ -35,6 +35,8 @@ export const bootstrap = async (): Promise<void> => {
   app.use('/api/auth', authRouter);
   app.use('/api/user', userRouter);
   app.use(globalErrorHandler);
+
+  app.get('/', (req, res) => res.json({ status: 'ok' }))
     
   app.listen(port, () => {
     console.log(`app listening on port ${port}`);
