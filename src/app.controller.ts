@@ -11,6 +11,7 @@ import { globalErrorHandler } from "./utils/errors/error.response";
 import { connectDB } from "./DB/connection";
 config({path : path.resolve('./config/.env.dev')});
 
+app.set('trust proxy', true);
 
 const limiter :RateLimitRequestHandler = expressRateLimit({
   windowMs: 15 * 60 * 1000,
