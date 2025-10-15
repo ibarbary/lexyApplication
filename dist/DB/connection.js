@@ -8,7 +8,6 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const connectDB = async () => {
     try {
         await mongoose_1.default.connect(process.env.MONGO_URI || "");
-        console.log(process.env);
         console.log("DB connected");
     }
     catch (error) {
