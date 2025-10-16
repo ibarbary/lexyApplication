@@ -27,7 +27,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use(globalErrorHandler);
 
-app.get("/", (req, res) => res.json({ status: "ok" }));
+app.get("/", (req, res) => res.json({ message: "Hello MotherFucker" }));
 
 if (process.env.NODE_ENV !== "production") {
   const port = process.env.PORT || 5000;
