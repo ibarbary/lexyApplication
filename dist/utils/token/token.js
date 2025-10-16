@@ -6,9 +6,9 @@ const user_model_1 = require("../../DB/model/user.model");
 const user_model_2 = require("../../DB/model/user.model");
 const error_response_1 = require("../errors/error.response");
 const user_repositiories_1 = require("../../DB/repositories/user.repositiories");
-const uuid_1 = require("uuid");
 const token_repository_1 = require("../../DB/repositories/token.repository");
 const token_model_1 = require("../../DB/model/token.model");
+const crypto_1 = require("crypto");
 var TokenEnum;
 (function (TokenEnum) {
     TokenEnum["Access"] = "Access";
@@ -30,7 +30,7 @@ const generateToken = async ({ payload, secret = process.env.ACCESS_USER_SIGNATU
 };
 exports.generateToken = generateToken;
 const verifyToken = async ({ token, secret = process.env.ACCESS_USER_SIGNATURE, }) => {
-    return await (0, jsonwebtoken_1.verify)(token, secret);
+    return (await (0, jsonwebtoken_1.verify)(token, secret));
 };
 exports.verifyToken = verifyToken;
 const getSignaturesLevel = async (role) => {
@@ -52,19 +52,25 @@ const getSignaturesLevel = async (role) => {
 };
 exports.getSignaturesLevel = getSignaturesLevel;
 const getSignature = async (signatureLevel = SignatureLevelEnum.User) => {
-    let Signature = { accessSignature: "", refreshSignature: "" };
+    let Signature = {
+        accessSignature: "",
+        refreshSignature: "",
+    };
     switch (signatureLevel) {
         case SignatureLevelEnum.User:
             Signature.accessSignature = process.env.ACCESS_USER_SIGNATURE;
             Signature.refreshSignature = process.env.REFRESH_USER_SIGNATURE;
             break;
         case SignatureLevelEnum.Guardian:
-            Signature.accessSignature = process.env.ACCESS_GUARDIAN_SIGNATURE;
-            Signature.refreshSignature = process.env.REFRESH_GUARDIAN_SIGNATURE;
+            Signature.accessSignature = process.env
+                .ACCESS_GUARDIAN_SIGNATURE;
+            Signature.refreshSignature = process.env
+                .REFRESH_GUARDIAN_SIGNATURE;
             break;
         case SignatureLevelEnum.Child:
             Signature.accessSignature = process.env.ACCESS_CHILD_SIGNATURE;
-            Signature.refreshSignature = process.env.REFRESH_CHILD_SIGNATURE;
+            Signature.refreshSignature = process.env
+                .REFRESH_CHILD_SIGNATURE;
             break;
         default:
             break;
@@ -75,21 +81,21 @@ exports.getSignature = getSignature;
 const createLoginCredentials = async (user) => {
     const SignatureLevel = await (0, exports.getSignaturesLevel)(user.role);
     const Signature = await (0, exports.getSignature)(SignatureLevel);
-    const jwtid = (0, uuid_1.v4)();
+    const jwtid = (0, crypto_1.randomUUID)();
     const accestoken = await (0, exports.generateToken)({
         payload: { _id: user._id },
         secret: Signature.accessSignature,
-        options: { expiresIn: Number(process.env.ACCESS_EXPIRES_IN), jwtid }
+        options: { expiresIn: Number(process.env.ACCESS_EXPIRES_IN), jwtid },
     });
     const refreshtoken = await (0, exports.generateToken)({
         payload: { _id: user._id },
         secret: Signature.refreshSignature,
-        options: { expiresIn: Number(process.env.REFRESH_EXPIRES_IN), jwtid }
+        options: { expiresIn: Number(process.env.REFRESH_EXPIRES_IN), jwtid },
     });
     return { accestoken, refreshtoken };
 };
 exports.createLoginCredentials = createLoginCredentials;
-const decodedtoken = async ({ authorization, tokenType = TokenEnum.Access }) => {
+const decodedtoken = async ({ authorization, tokenType = TokenEnum.Access, }) => {
     const usermodel = new user_repositiories_1.userRepository(user_model_1.UserModel);
     const [bearer, token] = authorization.split(" ");
     const tokenmodel = new token_repository_1.TokenRepository(token_model_1.TokenModel);
@@ -97,7 +103,12 @@ const decodedtoken = async ({ authorization, tokenType = TokenEnum.Access }) => 
         throw new error_response_1.UnauthorizedException("token not found");
     }
     const Signature = await (0, exports.getSignature)(bearer);
-    const decoded = await (0, exports.verifyToken)({ token, secret: tokenType === TokenEnum.Access ? Signature.accessSignature : Signature.refreshSignature });
+    const decoded = await (0, exports.verifyToken)({
+        token,
+        secret: tokenType === TokenEnum.Access
+            ? Signature.accessSignature
+            : Signature.refreshSignature,
+    });
     if (!decoded?._id || !decoded?.iat) {
         throw new error_response_1.UnauthorizedException("invalid token decoded");
     }
@@ -116,11 +127,16 @@ const decodedtoken = async ({ authorization, tokenType = TokenEnum.Access }) => 
 exports.decodedtoken = decodedtoken;
 const revokeToken = async (decoded) => {
     const tokenmodel = new token_repository_1.TokenRepository(token_model_1.TokenModel);
-    const [result] = await tokenmodel.create({ data: [{
+    const [result] = (await tokenmodel.create({
+        data: [
+            {
                 jti: decoded?.jti,
                 expiresIn: decoded?.iat + Number(process.env.REFRESH_EXPIRES_IN),
-                userId: decoded?._id
-            }], options: { validateBeforeSave: true } }) || [];
+                userId: decoded?._id,
+            },
+        ],
+        options: { validateBeforeSave: true },
+    })) || [];
     if (!result) {
         throw new error_response_1.UnauthorizedException("failed to revoke token");
     }
