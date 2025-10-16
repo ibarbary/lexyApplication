@@ -13,6 +13,8 @@ import { connectDB } from "./DB/connection";
 
 const app: Express = express();
 
+app.set("trust proxy", 1);
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -27,7 +29,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use(globalErrorHandler);
 
-app.get("/", (req, res) => res.json({ message: "Hello MotherFucker" }));
+app.get("/", (req, res) => res.json({ message: "Hello Lexy" }));
 
 if (process.env.NODE_ENV !== "production") {
   const port = process.env.PORT || 5000;
