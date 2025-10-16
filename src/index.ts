@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import path from "path";
-config({ path: path.join(__dirname, "../config/.env.dev") });
+config({ path: path.resolve(__dirname, "../.env") });
 
 import express, { Express } from "express";
 import helmet from "helmet";
